@@ -38,7 +38,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +46,6 @@ import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -211,12 +209,47 @@ fun RenderPopularOngoingUpdate(
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderRecentlyAddedSeries(
   addedSeries: List<RecentlyAddedSeries>,
-  onTap: () -> Unit = {}
 ) {
-  RenderHeaderTitle("Recently Added Series", onTap = onTap)
+  val sheetState = rememberModalBottomSheetState()
+  var showBottomSheet by remember { mutableStateOf(false) }
+
+  if (showBottomSheet) {
+    ModalBottomSheet(
+      sheetState = sheetState,
+      onDismissRequest = {
+        showBottomSheet = false
+      },
+    ) {
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(16.dp, 16.dp, 0.dp, 16.dp)
+          .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+      ) {
+        Text1("Recently Added Series", style = MaterialTheme.typography.titleMedium)
+        var currentLetter = ""
+
+        addedSeries.sortedBy { it.title }.forEach {
+          if (it.title.first().toString() != currentLetter) {
+            currentLetter = it.title.first().toString()
+            Text1(currentLetter, style = MaterialTheme.typography.titleSmall)
+          }
+
+          Text1(it.title, style = MaterialTheme.typography.bodyMedium)
+        }
+      }
+    }
+  }
+
+  RenderHeaderTitle("Recently Added Series", onTap = {
+    showBottomSheet = true
+  })
+
   Row(
     modifier = Modifier
       .fillMaxWidth()
@@ -256,11 +289,46 @@ fun RenderRecentlyAddedSeries(
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenderOngoingSeries(
-  addedSeries: List<OngoingSeries>,
+  ongoingSeries: List<OngoingSeries>,
 ) {
-  RenderHeaderTitle("Ongoing Series")
+  val sheetState = rememberModalBottomSheetState()
+  var showBottomSheet by remember { mutableStateOf(false) }
+
+  if (showBottomSheet) {
+    ModalBottomSheet(
+      sheetState = sheetState,
+      onDismissRequest = {
+        showBottomSheet = false
+      },
+    ) {
+      Column(
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(16.dp, 16.dp, 0.dp, 16.dp)
+          .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+      ) {
+        Text1("Recently Added Series", style = MaterialTheme.typography.titleMedium)
+        var currentLetter = ""
+
+        ongoingSeries.sortedBy { it.title }.forEach {
+          if (it.title.first().toString() != currentLetter) {
+            currentLetter = it.title.first().toString()
+            Text1(currentLetter, style = MaterialTheme.typography.titleSmall)
+          }
+
+          Text1(it.title, style = MaterialTheme.typography.bodyMedium)
+        }
+      }
+    }
+  }
+
+  RenderHeaderTitle("Ongoing Series", onTap = {
+    showBottomSheet = true
+  })
   Row(
     modifier = Modifier
       .fillMaxWidth()
@@ -273,7 +341,7 @@ fun RenderOngoingSeries(
         .height(IntrinsicSize.Min),
       verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-      addedSeries.subList(0, 9).forEach { item ->
+      ongoingSeries.subList(0, 9).forEach { item ->
         Text(
           text = item.title,
           style = MaterialTheme.typography.bodyMedium,
@@ -288,7 +356,7 @@ fun RenderOngoingSeries(
         .height(IntrinsicSize.Min),
       verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-      addedSeries.subList(10, 19).forEach { item ->
+      ongoingSeries.subList(10, 19).forEach { item ->
         Text(
           text = item.title,
           style = MaterialTheme.typography.bodyMedium,
@@ -349,41 +417,8 @@ fun HomeActivity(
     val message = viewModel.message.collectAsState()
     val isLoading = viewModel.isLoading.collectAsState()
 
-    val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember { mutableStateOf(false) }
-
     LaunchedEffect(homeResponse) {
       viewModel.getHome()
-    }
-
-    if (showBottomSheet) {
-      ModalBottomSheet(
-        sheetState = sheetState,
-        onDismissRequest = {
-          showBottomSheet = false
-        },
-      ) {
-        Column(
-          modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp, 16.dp, 0.dp, 16.dp),
-          verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-          Text1("Recently Added Series", style = MaterialTheme.typography.titleMedium)
-          homeResponse.value?.data?.recentlyAddedSeries.let { data ->
-            var currentLetter = ""
-
-            data?.sortedBy { it.title }?.forEach {
-              if (it.title.first().toString() != currentLetter) {
-                currentLetter = it.title.first().toString()
-                Text1(currentLetter, style = MaterialTheme.typography.titleSmall)
-              }
-
-              Text1(it.title, style = MaterialTheme.typography.bodyMedium)
-            }
-          }
-        }
-      }
     }
 
     if (isLoading.value) {
@@ -404,9 +439,7 @@ fun HomeActivity(
         homeResponse.value?.data?.let { RenderRecentRelease(it.recentRelease) }
         homeResponse.value?.data?.let { RenderPopularOngoingUpdate(it.popularOngoingUpdate) }
         homeResponse.value?.data?.let {
-          RenderRecentlyAddedSeries(it.recentlyAddedSeries, onTap = {
-            showBottomSheet = true
-          })
+          RenderRecentlyAddedSeries(it.recentlyAddedSeries)
         }
         homeResponse.value?.data?.let { RenderOngoingSeries(it.ongoingSeries) }
       }
