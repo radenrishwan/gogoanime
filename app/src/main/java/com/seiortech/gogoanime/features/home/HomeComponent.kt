@@ -101,27 +101,3 @@ fun OptionCard(title: String, icon: ImageVector, modifier: Modifier = Modifier) 
     )
   }
 }
-
-@Composable
-fun LoadingComponent(
-  message: String = "",
-  modifier: Modifier = Modifier,
-) {
-  Column(
-    modifier = modifier
-      .fillMaxSize()
-      .wrapContentSize(Alignment.Center),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center,
-  ) {
-    CircularProgressIndicator(
-      modifier = Modifier.size(36.dp),
-    )
-    if (message.isNotEmpty()) {
-      Text(
-        message,
-        style = MaterialTheme.typography.bodySmall,
-      )
-    }
-  }
-}

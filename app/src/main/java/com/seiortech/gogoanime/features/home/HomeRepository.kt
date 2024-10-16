@@ -1,6 +1,7 @@
 package com.seiortech.gogoanime.features.home
 
 import androidx.lifecycle.ViewModel
+import com.seiortech.gogoanime.BASE_URL
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -8,8 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.OkHttpClient
 import retrofit2.Response
-
-private const val BASE_URL = "https://gogoanime-api-500987716325.asia-southeast2.run.app/api/"
 
 interface HomeApiService {
   @GET("home")

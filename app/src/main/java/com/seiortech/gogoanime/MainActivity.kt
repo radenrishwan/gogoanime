@@ -3,56 +3,21 @@ package com.seiortech.gogoanime
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.AcUnit
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.LocalFireDepartment
-import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.NewReleases
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.compose.GogoanimeTheme
+import com.seiortech.gogoanime.features.detail.DetailActivity
 import com.seiortech.gogoanime.features.home.HomeActivity
-import com.seiortech.gogoanime.ui.theme.GogoanimeTheme
-import androidx.compose.material3.Text as Text1
+
+public const val BASE_URL = "https://gogoanime-api-500987716325.asia-southeast2.run.app/api/"
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,9 +30,80 @@ class MainActivity : ComponentActivity() {
   }
 }
 
+enum class Screen {
+  HOME,
+  DETAIL,
+}
+
+sealed class NavigationItem(val route: String) {
+  object Home : NavigationItem(Screen.HOME.name)
+  object Detail : NavigationItem(Screen.DETAIL.name)
+}
+
+@Composable
+fun AppNavHost(
+  navController: NavHostController,
+) {
+  NavHost(
+    navController = navController,
+    startDestination = NavigationItem.Home.route,
+  ) {
+    composable(
+      NavigationItem.Home.route,
+      enterTransition = {
+        slideIntoContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+    ) {
+      HomeActivity(navController = navController)
+    }
+    composable(
+      NavigationItem.Detail.route + "?slug={slug}&title={title}",
+      arguments = listOf(
+        navArgument("slug") { type = NavType.StringType },
+        navArgument("title") { type = NavType.StringType },
+      ),
+      enterTransition = {
+        slideIntoContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+    ) { backStackEntry ->
+      // get the slug and title from the arguments
+      val slug = backStackEntry.arguments?.getString("slug")
+      val title = backStackEntry.arguments?.getString("title")
+
+      DetailActivity(
+        navController = navController,
+        slug = slug!!,
+        title = title!!,
+      )
+    }
+  }
+}
+
 @Composable
 fun Main() {
-  HomeActivity()
+  val navController = rememberNavController()
+
+  AppNavHost(
+    navController = navController,
+  )
 }
 
 @Preview(showBackground = true)
