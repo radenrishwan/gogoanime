@@ -31,6 +31,7 @@ data class Details(
 
 @Parcelize
 data class Episode(
-  val title: Int, // Assuming it's an integer based on the example
+  val title: Int,
+  @SerializedName("episode_slug") val episodeSlug: String,
   val url: String
 ) : Parcelable

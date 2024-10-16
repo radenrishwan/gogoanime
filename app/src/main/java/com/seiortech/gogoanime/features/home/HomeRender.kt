@@ -203,11 +203,15 @@ fun RenderSelectionPageCard(
       ) {
         Text(
           text = item.title,
-          style = MaterialTheme.typography.titleSmall,
+          style = MaterialTheme.typography.titleSmall.copy(
+            color = Color.White,
+          ),
         )
         Text(
           text = item.subtitle,
-          style = MaterialTheme.typography.bodySmall,
+          style = MaterialTheme.typography.bodySmall.copy(
+            color = Color.White,
+          ),
           overflow = TextOverflow.Ellipsis,
           maxLines = 2,
         )
@@ -233,7 +237,7 @@ fun RenderRecentRelease(
           .clip(MaterialTheme.shapes.medium)
           .clickable {
             navController.navigate(
-              NavigationItem.Detail.route,
+              NavigationItem.Episode.route + "?slug=${item.episodeSlug}",
               navOptions = NavOptions
                 .Builder()
                 .setRestoreState(true)
