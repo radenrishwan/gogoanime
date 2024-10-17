@@ -25,7 +25,6 @@ import com.example.compose.GogoanimeTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnimeListActivity(
-  title: String,
   navController: NavController
 ) {
   Scaffold(
@@ -36,7 +35,7 @@ fun AnimeListActivity(
           titleContentColor = MaterialTheme.colorScheme.primary,
         ),
         title = {
-          Text(title)
+          Text("Anime List")
         },
         navigationIcon = {
           IconButton(

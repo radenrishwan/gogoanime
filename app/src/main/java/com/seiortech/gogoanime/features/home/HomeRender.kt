@@ -168,7 +168,7 @@ fun RenderSelectionPageCard(
     Box(
       modifier = Modifier
         .width(186.dp)
-        .height(221.dp)
+        .height(230.dp)
         .clip(MaterialTheme.shapes.medium)
         .clickable { item.onTap() },
       contentAlignment = Alignment.BottomStart,
@@ -225,7 +225,9 @@ fun RenderRecentRelease(
   recentReleaseList: List<RecentRelease>,
   navController: NavController,
 ) {
-  RenderHeaderTitle("Recent Release")
+  RenderHeaderTitle("Recent Release", onTap = {
+    navController.navigate(NavigationItem.RecentRelease.route)
+  })
   LazyRow(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {

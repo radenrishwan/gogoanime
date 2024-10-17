@@ -8,21 +8,27 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.seiortech.gogoanime.features.animelist.AnimeListActivity
 import com.seiortech.gogoanime.features.detail.DetailActivity
 import com.seiortech.gogoanime.features.episode.EpisodeActivity
 import com.seiortech.gogoanime.features.home.HomeActivity
+import com.seiortech.gogoanime.features.recentrelease.RecentReleaseActivity
 
 
 enum class Screen {
   HOME,
   DETAIL,
   EPISODE,
+  ANIME_LIST, // TODO: finish this route later, after implementing the api
+  RECENT_RELEASE,
 }
 
 sealed class NavigationItem(val route: String) {
   data object Home : NavigationItem(Screen.HOME.name)
   data object Detail : NavigationItem(Screen.DETAIL.name)
   data object Episode : NavigationItem(Screen.EPISODE.name)
+  data object AnimeList : NavigationItem(Screen.ANIME_LIST.name)
+  data object RecentRelease : NavigationItem(Screen.RECENT_RELEASE.name)
 }
 
 @Composable
@@ -101,6 +107,40 @@ fun AppNavHost(
       val slug = backStackEntry.arguments?.getString("slug")
 
       EpisodeActivity(episodeSlug = slug.orEmpty(), navController = navController)
+    }
+    composable(
+      NavigationItem.AnimeList.route,
+      enterTransition = {
+        slideIntoContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+    ) {
+      AnimeListActivity(navController = navController)
+    }
+    composable(
+      NavigationItem.RecentRelease.route,
+      enterTransition = {
+        slideIntoContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+    ) {
+      RecentReleaseActivity(navController = navController)
     }
   }
 }
