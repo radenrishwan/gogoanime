@@ -12,6 +12,7 @@ import com.seiortech.gogoanime.features.animelist.AnimeListActivity
 import com.seiortech.gogoanime.features.detail.DetailActivity
 import com.seiortech.gogoanime.features.episode.EpisodeActivity
 import com.seiortech.gogoanime.features.home.HomeActivity
+import com.seiortech.gogoanime.features.popularongoing.PopularOngoingActivity
 import com.seiortech.gogoanime.features.recentrelease.RecentReleaseActivity
 
 
@@ -21,6 +22,7 @@ enum class Screen {
   EPISODE,
   ANIME_LIST, // TODO: finish this route later, after implementing the api
   RECENT_RELEASE,
+  POPULAR_ONGOING,
 }
 
 sealed class NavigationItem(val route: String) {
@@ -29,6 +31,7 @@ sealed class NavigationItem(val route: String) {
   data object Episode : NavigationItem(Screen.EPISODE.name)
   data object AnimeList : NavigationItem(Screen.ANIME_LIST.name)
   data object RecentRelease : NavigationItem(Screen.RECENT_RELEASE.name)
+  data object PopularOngoing : NavigationItem(Screen.POPULAR_ONGOING.name)
 }
 
 @Composable
@@ -141,6 +144,23 @@ fun AppNavHost(
       },
     ) {
       RecentReleaseActivity(navController = navController)
+    }
+    composable(
+      NavigationItem.PopularOngoing.route,
+      enterTransition = {
+        slideIntoContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+      exitTransition = {
+        slideOutOfContainer(
+          AnimatedContentTransitionScope.SlideDirection.Right,
+          animationSpec = tween(300)
+        )
+      },
+    ) {
+      PopularOngoingActivity(navController = navController)
     }
   }
 }

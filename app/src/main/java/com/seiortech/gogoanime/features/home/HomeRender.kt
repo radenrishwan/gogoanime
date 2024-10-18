@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -157,8 +158,8 @@ fun RenderSelectionPageCard(
   HorizontalMultiBrowseCarousel(
     state = rememberCarouselState { sections.count() },
     modifier = Modifier
-      .width(412.dp)
-      .height(221.dp),
+      .fillMaxWidth()
+      .height(275.dp),
     preferredItemWidth = 186.dp,
     itemSpacing = 8.dp,
     contentPadding = PaddingValues(horizontal = 16.dp)
@@ -167,8 +168,8 @@ fun RenderSelectionPageCard(
 
     Box(
       modifier = Modifier
-        .width(186.dp)
-        .height(230.dp)
+        .width(230.dp)
+        .fillMaxHeight()
         .clip(MaterialTheme.shapes.medium)
         .clickable { item.onTap() },
       contentAlignment = Alignment.BottomStart,
@@ -234,9 +235,6 @@ fun RenderRecentRelease(
     items(recentReleaseList) { item ->
       Box(
         modifier = Modifier
-          .width(120.dp)
-          .height(180.dp)
-          .clip(MaterialTheme.shapes.medium)
           .clickable {
             navController.navigate(
               NavigationItem.Episode.route + "?slug=${item.episodeSlug}",
@@ -263,7 +261,9 @@ fun RenderPopularOngoingUpdate(
   itemList: List<PopularOngoingUpdate>,
   navController: NavController,
 ) {
-  RenderHeaderTitle("Popular Ongoing Update")
+  RenderHeaderTitle("Popular Ongoing Update", onTap = {
+    navController.navigate(NavigationItem.PopularOngoing.route)
+  })
   LazyRow(
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {

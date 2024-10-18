@@ -2,11 +2,7 @@ package com.seiortech.gogoanime.features.episode
 
 import android.annotation.SuppressLint
 import android.util.Log
-import android.view.View
-import android.webkit.WebChromeClient
 import android.webkit.WebView
-import android.widget.FrameLayout
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,7 +29,6 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,9 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.google.accompanist.web.AccompanistWebChromeClient
-import com.google.accompanist.web.rememberWebViewNavigator
-import com.google.accompanist.web.rememberWebViewState
 import com.seiortech.gogoanime.global.LoadingComponent
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -101,24 +93,10 @@ fun EpisodeActivity(
           Text("Something went wrong, please try again later.")
         }
 
-        val state = rememberWebViewState(url = episodeResponse.value?.data?.urls?.first() ?: "")
-        val navigator = rememberWebViewNavigator()
-        val chromeClient = remember { CustomChromeClient(ComponentActivity()) }
-
         Surface(
           modifier = Modifier.fillMaxSize(),
           color = MaterialTheme.colorScheme.surface
         ) {
-//          WebView(
-//            state = state,
-//            modifier = Modifier.fillMaxSize(),
-//            navigator = navigator,
-//            chromeClient = chromeClient, //This is what concerns us for fullscreen mode
-//            onCreated = { webView ->
-//              webView.settings.javaScriptEnabled = true
-//              webView.loadUrl(episodeResponse.value?.data?.urls?.first() ?: "")
-//            }
-//          )
           AndroidView(
             factory = { context ->
               WebView(context).apply {
@@ -148,8 +126,6 @@ fun EpisodeActivity(
               .fillMaxWidth()
               .clickable {
                 uriHandler.openUri(it)
-
-//                navigator.loadUrl(it)
               }
           ) {
             Row(
@@ -178,28 +154,5 @@ fun EpisodeActivity(
         )
       }
     }
-  }
-}
-
-class CustomChromeClient(val activity: ComponentActivity) : AccompanistWebChromeClient() {
-  private var customView: View? = null
-  override fun onHideCustomView() {
-    (activity.window.decorView as FrameLayout).removeView(this.customView)
-    this.customView = null
-  }
-
-  override fun onShowCustomView(
-    paramView: View,
-    paramCustomViewCallback: WebChromeClient.CustomViewCallback
-  ) {
-    if (this.customView != null) {
-      onHideCustomView()
-      return
-    }
-    this.customView = paramView
-    (activity.window.decorView as FrameLayout).addView(
-      this.customView,
-      FrameLayout.LayoutParams(-1, -1)
-    )
   }
 }
